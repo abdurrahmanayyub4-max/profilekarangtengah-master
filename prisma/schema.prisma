@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String   // bcrypt hash
+  name      String?
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Beranda {
+  id Int @id @default(autoincrement())
+
+  // Sambutan
+  namaKepala      String
+  jabatanKepala   String
+  judulSambutan   String
+  isiSambutan     String
+
+  // Deskripsi padukuhan
+  judulDeskripsi  String
+  deskripsi1      String
+  jumlahPenduduk  String
+  satuanPenduduk  String
+  jumlahRT        String
+  labelRT         String
+  jumlahRW        String
+  labelRW         String
+  deskripsi2      String
+
+  // Potensi
+  judulPertanian  String
+  isiPertanian    String
+  judulPeternakan String
+  isiPeternakan   String
+  deskripsi3      String
+  deskripsi4      String
+  deskripsi5      String
+
+  // Visi misi
+  judulVisiMisi   String
+  judulVisi       String
+  isiVisi         String
+
+  misiList String?
+
+  // Map
+  mapLink  String
+  alamat   String
+}
+
+model Fasilitas {
+  id            Int    @id @default(autoincrement())
+  kategori      String
+  namaFasilitas String
+  image         String
+  mapLink       String
+}
+
+model Pemerintahan {
+  id                Int      @id @default(autoincrement())
+  judul             String
+  deskripsi         String
+  judulDeskripsi    String
+  isiDeskripsi      String
+  judulVisiMisi     String
+  visi              String
+  deskripsiStruktur String
+  createdAt         DateTime @default(now())
+}
+
+model PerangkatDesa {
+  id        Int      @id @default(autoincrement())
+  nama      String
+  jabatan   String
+  createdAt DateTime @default(now())
+}
+
+model Potensi {
+  id               Int    @id @default(autoincrement())
+  sektor           String
+  image            String
+  judulGambar      String
+  deskripsiGambar  String
+  deskripsiSektor  String
+  komoditas        String
+}
+

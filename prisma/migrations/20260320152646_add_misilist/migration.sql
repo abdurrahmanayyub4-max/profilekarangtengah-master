@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Beranda" ALTER COLUMN "misiList" DROP NOT NULL,
+ALTER COLUMN "misiList" SET DATA TYPE TEXT;
