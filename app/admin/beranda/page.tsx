@@ -1,4 +1,5 @@
 // app/admin/beranda/page.tsx
+import { Beranda } from "@prisma/client";
 import prisma from '@/lib/prisma';
 import {
   FaLayerGroup, FaHome, FaLandmark, FaSeedling,
@@ -10,7 +11,7 @@ import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
 export default async function AdminDashboard() {
-  const berandaList = await prisma.beranda.findMany();
+  const berandaList: Beranda[] = await prisma.beranda.findMany();
 
   return (
     <div className="flex min-h-screen bg-gray-50">
