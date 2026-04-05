@@ -8,9 +8,17 @@ import Link from 'next/link';
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
+// Force dynamic rendering to avoid build-time database calls
+export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
-  const beranda = await prisma.beranda.findFirst();
+  let beranda = null;
+
+  try {
+    beranda = await prisma.beranda.findFirst();
+  } catch (error) {
+    console.error('Failed to fetch beranda data:', error);
+  }
 
   const misiList = (() => {
     try {

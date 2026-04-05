@@ -10,8 +10,17 @@ import HapusButton from './HapusButton';
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
+// Force dynamic rendering to avoid build-time database calls
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
-  const berandaList: Beranda[] = await prisma.beranda.findMany();
+  let berandaList: Beranda[] = [];
+
+  try {
+    berandaList = await prisma.beranda.findMany();
+  } catch (error) {
+    console.error('Failed to fetch beranda data:', error);
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-50">

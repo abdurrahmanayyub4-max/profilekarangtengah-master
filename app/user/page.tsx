@@ -4,6 +4,9 @@ import VideoSection from '@/app/user/components/VideoSection';
 import prisma from '@/lib/prisma';
 import { MapPin, CheckCircle, Leaf, Target, Heart, Users } from 'lucide-react';
 
+// Force dynamic rendering to avoid build-time database calls
+export const dynamic = 'force-dynamic';
+
 // ── Ekstrak embed URL dari string yang mungkin berisi <iframe> HTML ──────────
 function getEmbedUrl(raw: string | null | undefined): string {
   if (!raw) return '';

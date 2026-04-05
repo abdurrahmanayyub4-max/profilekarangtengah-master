@@ -1,14 +1,23 @@
 //app/user/pemerintahan/page/tsx
 import prisma from "@/lib/prisma";
+import { PerangkatDesa } from "@prisma/client";
 import { Users, Target, History } from "lucide-react";
 
+// Force dynamic rendering to avoid build-time database calls
+export const dynamic = 'force-dynamic';
+
 export default async function Pemerintahan() {
+  let pemerintahan = null;
+  let perangkat: PerangkatDesa[] = [];
 
-  const pemerintahan = await prisma.pemerintahan.findFirst();
-
-  const perangkat = await prisma.perangkatDesa.findMany({
-    orderBy: { id: 'asc' },
-  });
+  try {
+    pemerintahan = await prisma.pemerintahan.findFirst();
+    perangkat = await prisma.perangkatDesa.findMany({
+      orderBy: { id: "asc" },
+    });
+  } catch (error) {
+    console.error("Failed to fetch pemerintahan data:", error);
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

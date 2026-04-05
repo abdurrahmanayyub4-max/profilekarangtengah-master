@@ -3,13 +3,22 @@ import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { TrendingUp } from "lucide-react";
 import { Potensi } from "@prisma/client";
-export default async function PotensiDesa() {
 
-  const data = await prisma.potensi.findMany({
-    orderBy: {
-      sektor: "asc",
-    },
-  });
+// Force dynamic rendering to avoid build-time database calls
+export const dynamic = 'force-dynamic';
+
+export default async function PotensiDesa() {
+  let data: Potensi[] = [];
+
+  try {
+    data = await prisma.potensi.findMany({
+      orderBy: {
+        sektor: "asc",
+      },
+    });
+  } catch (error) {
+    console.error("Failed to fetch potensi data:", error);
+  }
 
   return (
     <div className="bg-gradient-to-b from-white via-amber-50 to-green-50">

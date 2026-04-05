@@ -8,10 +8,19 @@ import TambahModal from './tambah/TambahForm';
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
+// Force dynamic rendering to avoid build-time database calls
+export const dynamic = 'force-dynamic';
 
 export default async function FasilitasAdmin() {
-  const fasilitas: Fasilitas[] = await prisma.fasilitas.findMany();
-  const totalKategori = [...new Set(fasilitas.map((f) => f.kategori))].length;
+  let fasilitas: Fasilitas[] = [];
+  let totalKategori = 0;
+
+  try {
+    fasilitas = await prisma.fasilitas.findMany();
+    totalKategori = [...new Set(fasilitas.map((f) => f.kategori))].length;
+  } catch (error) {
+    console.error('Failed to fetch fasilitas data:', error);
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-50">

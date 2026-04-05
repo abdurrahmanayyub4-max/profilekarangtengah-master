@@ -1,19 +1,36 @@
 // app/admin/pemerintahan/page.tsx
 import prisma from '@/lib/prisma';
+import { PerangkatDesa } from "@prisma/client";
 import {
-  FaLayerGroup, FaHome, FaLandmark, FaSeedling,
-  FaBuilding, FaBell, FaEye, FaEdit, FaUsers
-} from 'react-icons/fa';
-import Link from 'next/link';
-import LogoutButton from '@/components/LogoutButton';
-import ProfileModal from '@/components/ProfileModal';
+  FaLayerGroup,
+  FaHome,
+  FaLandmark,
+  FaSeedling,
+  FaBuilding,
+  FaBell,
+  FaEye,
+  FaEdit,
+  FaUsers,
+} from "react-icons/fa";
+import Link from "next/link";
+import LogoutButton from "@/components/LogoutButton";
+import ProfileModal from "@/components/ProfileModal";
 
+// Force dynamic rendering to avoid build-time database calls
+export const dynamic = "force-dynamic";
 
 export default async function AdminPemerintahan() {
-  const pemerintahan = await prisma.pemerintahan.findFirst();
-  const perangkat = await prisma.perangkatDesa.findMany({
-    orderBy: { id: 'asc' },
-  });
+  let pemerintahan = null;
+  let perangkat: PerangkatDesa[] = [];
+
+  try {
+    pemerintahan = await prisma.pemerintahan.findFirst();
+    perangkat = await prisma.perangkatDesa.findMany({
+      orderBy: { id: "asc" },
+    });
+  } catch (error) {
+    console.error("Failed to fetch pemerintahan data:", error);
+  }
 
   return (
     <div className="flex h-screen overflow-hidden  bg-gray-50">
@@ -25,23 +42,41 @@ export default async function AdminPemerintahan() {
               <FaLayerGroup className="text-white text-sm" />
             </div>
             <div>
-              <div className="text-white font-bold text-base tracking-wide leading-tight">AdminPanel</div>
+              <div className="text-white font-bold text-base tracking-wide leading-tight">
+                AdminPanel
+              </div>
               <div className="text-indigo-300 text-xs font-medium">v2.0</div>
             </div>
           </div>
         </div>
         <nav className="flex-1 p-4 space-y-1">
-          <div className="text-indigo-400 text-xs font-semibold uppercase tracking-widest px-3 mb-3">Menu Utama</div>
+          <div className="text-indigo-400 text-xs font-semibold uppercase tracking-widest px-3 mb-3">
+            Menu Utama
+          </div>
           {[
-            { icon: FaHome,     label: 'Dashboard',           href: '/admin/beranda' },
-            { icon: FaLandmark, label: 'Pemerintahan',        href: '/admin/pemerintahan' },
-            { icon: FaSeedling, label: 'Potensi Padukuhan',   href: '/admin/potensi' },
-            { icon: FaBuilding, label: 'Fasilitas Padukuhan', href: '/admin/fasilitas' },
+            { icon: FaHome, label: "Dashboard", href: "/admin/beranda" },
+            {
+              icon: FaLandmark,
+              label: "Pemerintahan",
+              href: "/admin/pemerintahan",
+            },
+            {
+              icon: FaSeedling,
+              label: "Potensi Padukuhan",
+              href: "/admin/potensi",
+            },
+            {
+              icon: FaBuilding,
+              label: "Fasilitas Padukuhan",
+              href: "/admin/fasilitas",
+            },
           ].map(({ icon: Icon, label, href }) => (
             <Link
               key={label}
               href={href}
-              className={`sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-indigo-200 hover:text-white ${label === 'Pemerintahan' ? 'active text-white' : ''}`}
+              className={`sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-indigo-200 hover:text-white ${
+                label === "Pemerintahan" ? "active text-white" : ""
+              }`}
             >
               <Icon className="text-base flex-shrink-0" />
               <span>{label}</span>
@@ -49,8 +84,8 @@ export default async function AdminPemerintahan() {
           ))}
         </nav>
         <div className="p-4 border-t border-white border-opacity-10">
-        <ProfileModal />
-        <LogoutButton />
+          <ProfileModal />
+          <LogoutButton />
         </div>
       </aside>
 
@@ -58,8 +93,12 @@ export default async function AdminPemerintahan() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="glass-header sticky top-0 z-20 px-8 py-4 flex justify-between items-center">
           <div>
-            <div className="text-xs text-indigo-400 font-semibold uppercase tracking-widest mb-0.5">Manajemen</div>
-            <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Kelola Pemerintahan</h1>
+            <div className="text-xs text-indigo-400 font-semibold uppercase tracking-widest mb-0.5">
+              Manajemen
+            </div>
+            <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+              Kelola Pemerintahan
+            </h1>
           </div>
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -81,17 +120,45 @@ export default async function AdminPemerintahan() {
           {/* Stat Cards */}
           <div className="grid grid-cols-3 gap-5 mb-8">
             {[
-              { label: 'Total Perangkat', value: perangkat.length,                         color: 'from-indigo-500 to-violet-500',  textC: 'text-indigo-600' },
-              { label: 'Judul',           value: pemerintahan?.judul ?? '-',                color: 'from-emerald-500 to-teal-500',   textC: 'text-emerald-600' },
-              { label: 'Visi',            value: pemerintahan?.visi  ?? '-',                color: 'from-amber-500 to-orange-400',   textC: 'text-amber-600' },
+              {
+                label: "Total Perangkat",
+                value: perangkat.length,
+                color: "from-indigo-500 to-violet-500",
+                textC: "text-indigo-600",
+              },
+              {
+                label: "Judul",
+                value: pemerintahan?.judul ?? "-",
+                color: "from-emerald-500 to-teal-500",
+                textC: "text-emerald-600",
+              },
+              {
+                label: "Visi",
+                value: pemerintahan?.visi ?? "-",
+                color: "from-amber-500 to-orange-400",
+                textC: "text-amber-600",
+              },
             ].map((stat) => (
-              <div key={stat.label} className="stat-card rounded-2xl bg-white p-5 flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg flex-shrink-0`}>
-                  <span className="text-white font-bold text-sm text-center leading-tight px-1">{stat.label === 'Total Perangkat' ? stat.value : '—'}</span>
+              <div
+                key={stat.label}
+                className="stat-card rounded-2xl bg-white p-5 flex items-center gap-4"
+              >
+                <div
+                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg flex-shrink-0`}
+                >
+                  <span className="text-white font-bold text-sm text-center leading-tight px-1">
+                    {stat.label === "Total Perangkat" ? stat.value : "—"}
+                  </span>
                 </div>
                 <div className="min-w-0">
-                  <div className="text-gray-400 text-xs font-semibold uppercase tracking-wider">{stat.label}</div>
-                  <div className={`text-sm font-extrabold ${stat.textC} truncate`}>{stat.label === 'Total Perangkat' ? stat.value : stat.value}</div>
+                  <div className="text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                    {stat.label}
+                  </div>
+                  <div
+                    className={`text-sm font-extrabold ${stat.textC} truncate`}
+                  >
+                    {stat.label === "Total Perangkat" ? stat.value : stat.value}
+                  </div>
                 </div>
               </div>
             ))}
@@ -101,7 +168,9 @@ export default async function AdminPemerintahan() {
           {pemerintahan && (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
               <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <span className="font-bold text-gray-700 text-base">Info Pemerintahan</span>
+                <span className="font-bold text-gray-700 text-base">
+                  Info Pemerintahan
+                </span>
                 <div className="flex gap-2">
                   <Link
                     href={`/admin/pemerintahan/${pemerintahan.id}/detail`}
@@ -119,20 +188,36 @@ export default async function AdminPemerintahan() {
               </div>
               <div className="p-6 grid grid-cols-2 gap-6">
                 <div>
-                  <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Judul</div>
-                  <div className="font-bold text-gray-800">{pemerintahan.judul ?? '-'}</div>
+                  <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">
+                    Judul
+                  </div>
+                  <div className="font-bold text-gray-800">
+                    {pemerintahan.judul ?? "-"}
+                  </div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Deskripsi</div>
-                  <div className="text-sm text-gray-600 line-clamp-2">{pemerintahan.deskripsi ?? '-'}</div>
+                  <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">
+                    Deskripsi
+                  </div>
+                  <div className="text-sm text-gray-600 line-clamp-2">
+                    {pemerintahan.deskripsi ?? "-"}
+                  </div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Visi</div>
-                  <div className="text-sm text-gray-700 font-semibold">{pemerintahan.visi ?? '-'}</div>
+                  <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">
+                    Visi
+                  </div>
+                  <div className="text-sm text-gray-700 font-semibold">
+                    {pemerintahan.visi ?? "-"}
+                  </div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Judul Visi Misi</div>
-                  <div className="text-sm text-gray-700">{pemerintahan.judulVisiMisi ?? '-'}</div>
+                  <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">
+                    Judul Visi Misi
+                  </div>
+                  <div className="text-sm text-gray-700">
+                    {pemerintahan.judulVisiMisi ?? "-"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -141,32 +226,52 @@ export default async function AdminPemerintahan() {
           {/* Tabel Perangkat Desa */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-              <span className="font-bold text-gray-700 text-base">Daftar Perangkat Desa</span>
-              <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full font-semibold">{perangkat.length} data</span>
+              <span className="font-bold text-gray-700 text-base">
+                Daftar Perangkat Desa
+              </span>
+              <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full font-semibold">
+                {perangkat.length} data
+              </span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="min-w-full">
                 <thead>
                   <tr className="bg-gradient-to-r from-gray-50 to-indigo-50 border-b border-gray-100">
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">No</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Nama</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Jabatan</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Aksi</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                      No
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                      Nama
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                      Jabatan
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">
+                      Aksi
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {perangkat.map((p, idx) => (
-                    <tr key={p.id} className="table-row animate-row" style={{ animationDelay: `${idx * 50}ms` }}>
+                    <tr
+                      key={p.id}
+                      className="table-row animate-row"
+                      style={{ animationDelay: `${idx * 50}ms` }}
+                    >
                       <td className="px-6 py-4">
-                        <span className="row-number">{String(idx + 1).padStart(2, '0')}</span>
+                        <span className="row-number">
+                          {String(idx + 1).padStart(2, "0")}
+                        </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
                             <FaUsers className="text-indigo-500 text-xs" />
                           </div>
-                          <div className="font-bold text-gray-800 text-sm">{p.nama}</div>
+                          <div className="font-bold text-gray-800 text-sm">
+                            {p.nama}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -189,7 +294,9 @@ export default async function AdminPemerintahan() {
               </table>
 
               {perangkat.length === 0 && (
-                <div className="py-16 text-center text-gray-300 font-semibold">Belum ada data perangkat desa.</div>
+                <div className="py-16 text-center text-gray-300 font-semibold">
+                  Belum ada data perangkat desa.
+                </div>
               )}
             </div>
           </div>

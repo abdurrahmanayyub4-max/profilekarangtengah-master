@@ -5,9 +5,18 @@ import { Building2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function Fasilitas() {
+// Force dynamic rendering to avoid build-time database calls
+export const dynamic = 'force-dynamic';
 
-  const fasilitasData: FasilitasType[] = await prisma.fasilitas.findMany();
+export default async function Fasilitas() {
+  let fasilitasData: FasilitasType[] = [];
+
+  try {
+    fasilitasData = await prisma.fasilitas.findMany();
+  } catch (error) {
+    console.error("Failed to fetch fasilitas data:", error);
+    // Return empty array or show error state
+  }
 
   return (
     <div className="bg-gradient-to-b from-white via-green-50 to-amber-50">

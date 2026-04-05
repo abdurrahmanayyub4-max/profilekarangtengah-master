@@ -7,9 +7,19 @@ import HapusButton from './HapusButton';
 import LogoutButton from '@/components/LogoutButton';
 import ProfileModal from '@/components/ProfileModal';
 
+// Force dynamic rendering to avoid build-time database calls
+export const dynamic = 'force-dynamic';
+
 export default async function PotensiAdmin() {
-  const potensi: Potensi[] = await prisma.potensi.findMany();
-  const totalKategori = [...new Set(potensi.map((p) => p.sektor))].length;
+  let potensi: Potensi[] = [];
+  let totalKategori = 0;
+
+  try {
+    potensi = await prisma.potensi.findMany();
+    totalKategori = [...new Set(potensi.map((p) => p.sektor))].length;
+  } catch (error) {
+    console.error('Failed to fetch potensi data:', error);
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-50">
